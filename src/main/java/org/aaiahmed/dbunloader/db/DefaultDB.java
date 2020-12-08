@@ -2,23 +2,27 @@ package org.aaiahmed.dbunloader.db;
 
 import java.sql.*;
 
-public class MySQL implements DB {
+public abstract class DefaultDB implements DB {
 
   private final String url;
   private final String user;
   private final String password;
+  private String driver;
   private Connection connection;
 
-  public MySQL(final String driver, final String url, final String user, final String password)
-      throws ClassNotFoundException {
+  public DefaultDB(final String url, final String user, final String password) {
     this.url = url;
     this.user = user;
     this.password = password;
-    Class.forName(driver);
+  }
+
+  protected void setDriver(final String driver) {
+    this.driver = driver;
   }
 
   @Override
-  public void connect() throws SQLException {
+  public void connect() throws SQLException, ClassNotFoundException {
+    Class.forName(driver);
     connection = DriverManager.getConnection(url, user, password);
     connection.setAutoCommit(false);
   }
