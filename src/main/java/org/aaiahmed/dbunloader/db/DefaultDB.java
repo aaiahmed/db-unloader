@@ -3,7 +3,6 @@ package org.aaiahmed.dbunloader.db;
 import java.sql.*;
 
 public abstract class DefaultDB implements DB {
-
   private final String url;
   private final String user;
   private final String password;

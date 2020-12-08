@@ -1,7 +1,6 @@
 package org.aaiahmed.dbunloader.db;
 
 public class PostgreSQLDB extends DefaultDB {
-
   private final String driver = "org.postgresql.Driver";
 
   public PostgreSQLDB(
