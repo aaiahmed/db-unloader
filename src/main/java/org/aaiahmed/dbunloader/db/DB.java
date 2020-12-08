@@ -1,11 +1,11 @@
 package org.aaiahmed.dbunloader.db;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public interface DB {
-    Connection connect();
-    ResultSet execute();
-    void commit();
-    void close();
+  void connect() throws SQLException;
+  ResultSet executeQuery(final String query) throws SQLException;
+  void commit() throws SQLException;
+  void close() throws SQLException;
 }
