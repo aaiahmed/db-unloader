@@ -10,21 +10,35 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 public class CsvWriter implements Writer {
+
   @Override
-  public void write(final String tableName, final String[] headers, final ResultSet resultSet)
+  public void write(final String table, final String[] headers, final ResultSet resultSet)
       throws IOException, SQLException {
 
-    Config conf = ConfigFactory.load();
-    final String pathName = conf.getString("writer.path");
-    // TODO: Add timestamp to filename.
-    final File file = new File(String.format("%1s/%2s.csv", pathName, tableName));
+    final File file = getWriterFile(table, ConfigFactory.load());
 
     try (FileWriter fileWriter = new FileWriter(file);
         CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.withHeader(headers))) {
 
       csvPrinter.printRecords(resultSet);
     }
+  }
+
+  private File getWriterFile(final String table, final Config conf) {
+    final String path = conf.getString("writer.path");
+    return new File(String.format("%1s/%2s_%3s.csv", path, table, getCurrentDateTime()));
+  }
+
+  private String getCurrentDateTime() {
+    final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+    final Instant currentTime = Instant.now();
+    final OffsetDateTime offsetDateTime = currentTime.atOffset(ZoneOffset.UTC);
+    return offsetDateTime.format(dateTimeFormatter);
   }
 }
