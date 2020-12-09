@@ -5,7 +5,6 @@ import java.sql.SQLException;
 
 public interface DB {
   void connect() throws SQLException, ClassNotFoundException;
-  ResultSet executeQuery(final String query) throws SQLException;
-  void commit() throws SQLException;
+  ResultSet executeQuery(final String query, final int fetchSize) throws SQLException;
   void close() throws SQLException;
 }

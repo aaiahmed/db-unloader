@@ -27,14 +27,10 @@ public abstract class DefaultDB implements DB {
   }
 
   @Override
-  public ResultSet executeQuery(final String query) throws SQLException {
+  public ResultSet executeQuery(final String query, final int fetchSize) throws SQLException {
     final Statement statement = connection.createStatement();
+    statement.setFetchSize(fetchSize);
     return statement.executeQuery(query);
-  }
-
-  @Override
-  public void commit() throws SQLException {
-    connection.commit();
   }
 
   @Override

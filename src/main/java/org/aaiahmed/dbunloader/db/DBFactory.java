@@ -12,11 +12,11 @@ public class DBFactory {
     final String dbName = conf.getString("database.db");
     final String user = conf.getString("database.user");
     final String password = conf.getString("database.password");
-    final String type = conf.getString("database.type");
+    final String dbType = conf.getString("database.type");
 
-    if (type.equals("postgresql")) {
+    if (dbType.equals("postgresql")) {
       return new PostgreSQLDB(host, port, dbName, user, password);
-    } else if (type.equals("mysql")) {
+    } else if (dbType.equals("mysql")) {
       return new MySQLDB(host, port, dbName, user, password);
     } else {
       throw new RuntimeException("Database type not yet implemented.");
