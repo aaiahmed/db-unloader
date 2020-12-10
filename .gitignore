@@ -1,4 +1,4 @@
 .idea/
 db-unloader.iml
 target/
-scripts/
+scripts/test_setup.sql

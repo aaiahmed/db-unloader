@@ -31,8 +31,12 @@ public class CsvWriter implements Writer {
   }
 
   private File getWriterFile(final String table, final Config conf) {
-    final String path = conf.getString("writer.path");
-    return new File(String.format("%1s/%2s_%3s.csv", path, table, getCurrentDateTime()));
+    final String directoryName = String.format("%1s/%2s", conf.getString("writer.path"), table);
+    final File directory = new File(directoryName);
+    if (!directory.exists()) {
+      directory.mkdir();
+    }
+    return new File(String.format("%1s/%2s.csv", directoryName, getCurrentDateTime()));
   }
 
   private String getCurrentDateTime() {
