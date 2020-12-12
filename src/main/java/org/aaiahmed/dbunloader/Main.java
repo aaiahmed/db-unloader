@@ -4,11 +4,13 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.aaiahmed.dbunloader.db.DB;
 import org.aaiahmed.dbunloader.db.DBFactory;
+import org.aaiahmed.dbunloader.utils.Utils;
 import org.aaiahmed.dbunloader.writer.Writer;
 import org.aaiahmed.dbunloader.writer.WriterFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -47,17 +49,17 @@ public class Main {
       final DB db, final List<String> tablesToUnload, final Config conf) {
 
     ExecutorService executorService = Executors.newFixedThreadPool(conf.getInt("app.numThreads"));
-    for (String table : tablesToUnload) {
+    for (String tableName : tablesToUnload) {
       executorService.submit(
           () -> {
             try {
-              logger.info("Table unload started for table: {}.", table);
-              final String[] header = getTableHeader(db, table, conf);
-              final ResultSet resultSet = getTableData(db, table, conf);
-              writeTableData(table, conf, header, resultSet);
-              logger.info("Table unload completed for table: {}.", table);
+              logger.info("Table unload started for table: {}.", tableName);
+              final String[] header = getTableHeader(db, tableName, conf);
+              final ResultSet resultSet = getTableContent(db, tableName, conf);
+              writeTableData(tableName, conf, header, resultSet);
+              logger.info("Table unload completed for table: {}.", tableName);
             } catch (SQLException | IOException e) {
-              logger.error("Table unload failed for table: {}.", table, e);
+              logger.error("Table unload failed for table: {}.", tableName, e);
             }
           });
     }
@@ -85,7 +87,7 @@ public class Main {
     return columns.toArray(String[]::new);
   }
 
-  private static ResultSet getTableData(final DB db, final String table, final Config conf)
+  private static ResultSet getTableContent(final DB db, final String table, final Config conf)
       throws SQLException {
 
     logger.info("Retrieving data from table: {}.", table);
@@ -99,8 +101,10 @@ public class Main {
       throws SQLException, IOException {
 
     logger.info("Writing data for table: {}.", tableName);
-    WriterFactory writerFactory = new WriterFactory();
-    Writer writer = writerFactory.getWriter();
-    writer.write(tableName, conf, header, resultSet);
+    final String path = conf.getString("writer.path");
+    final WriterFactory writerFactory = new WriterFactory();
+    final Writer writer = writerFactory.getWriter();
+    final File file = Utils.getWriterFile(path, tableName, Utils.getCurrentDateTime());
+    writer.write(header, resultSet, file);
   }
 }
