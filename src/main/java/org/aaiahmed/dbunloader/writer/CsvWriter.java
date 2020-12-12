@@ -18,10 +18,10 @@ import java.time.format.DateTimeFormatter;
 public class CsvWriter implements Writer {
 
   @Override
-  public void write(final String table, final String[] headers, final ResultSet resultSet)
+  public void write(final String table, final Config conf, final String[] headers, final ResultSet resultSet)
       throws IOException, SQLException {
 
-    final File file = getWriterFile(table, ConfigFactory.load());
+    final File file = getWriterFile(table, conf);
 
     try (FileWriter fileWriter = new FileWriter(file);
         CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.withHeader(headers))) {
@@ -30,7 +30,7 @@ public class CsvWriter implements Writer {
     }
   }
 
-  private File getWriterFile(final String table, final Config conf) {
+  File getWriterFile(final String table, final Config conf) {
     final String directoryName = String.format("%1s/%2s", conf.getString("writer.path"), table);
     final File directory = new File(directoryName);
     if (!directory.exists()) {
@@ -39,7 +39,7 @@ public class CsvWriter implements Writer {
     return new File(String.format("%1s/%2s.csv", directoryName, getCurrentDateTime()));
   }
 
-  private String getCurrentDateTime() {
+  String getCurrentDateTime() {
     final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     final Instant currentTime = Instant.now();
     final OffsetDateTime offsetDateTime = currentTime.atOffset(ZoneOffset.UTC);

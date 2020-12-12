@@ -54,7 +54,7 @@ public class Main {
               logger.info("Table unload started for table: {}.", table);
               final String[] header = getTableHeader(db, table, conf);
               final ResultSet resultSet = getTableData(db, table, conf);
-              writeTableData(table, header, resultSet);
+              writeTableData(table, conf, header, resultSet);
               logger.info("Table unload completed for table: {}.", table);
             } catch (SQLException | IOException e) {
               logger.error("Table unload failed for table: {}.", table, e);
@@ -95,12 +95,12 @@ public class Main {
   }
 
   private static void writeTableData(
-      final String tableName, final String[] header, final ResultSet resultSet)
+      final String tableName, final Config conf, final String[] header, final ResultSet resultSet)
       throws SQLException, IOException {
 
     logger.info("Writing data for table: {}.", tableName);
     WriterFactory writerFactory = new WriterFactory();
     Writer writer = writerFactory.getWriter();
-    writer.write(tableName, header, resultSet);
+    writer.write(tableName, conf, header, resultSet);
   }
 }
