@@ -21,6 +21,8 @@
         <commons.csv.version>1.8</commons.csv.version>
         <slf4j.version>1.7.30</slf4j.version>
         <maven.compiler.version>3.8.1</maven.compiler.version>
+        <google.guice.version>4.2.3</google.guice.version>
+        <azure.storage.sdk.version>12.3.0</azure.storage.sdk.version>
     </properties>
     <build>
         <plugins>
@@ -114,6 +116,16 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>${google.guice.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-storage-file-datalake</artifactId>
+            <version>${azure.storage.sdk.version}</version>
         </dependency>
     </dependencies>
 </project>
