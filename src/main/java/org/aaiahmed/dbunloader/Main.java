@@ -4,6 +4,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.aaiahmed.dbunloader.db.DB;
 import org.aaiahmed.dbunloader.db.DBFactory;
+import org.aaiahmed.dbunloader.storage.AwsS3;
 import org.aaiahmed.dbunloader.utils.Utils;
 import org.aaiahmed.dbunloader.writer.Writer;
 import org.aaiahmed.dbunloader.writer.WriterFactory;
@@ -22,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
   private static Logger logger = LoggerFactory.getLogger(Main.class);
+  private static final String currentTimeStamp = Utils.getCurrentDateTime();
 
   public static void main(String[] args) {
     try {
@@ -57,6 +59,7 @@ public class Main {
               final String[] header = getTableHeader(db, tableName, conf);
               final ResultSet resultSet = getTableContent(db, tableName, conf);
               writeTableData(tableName, conf, header, resultSet);
+              uploadToS3(tableName, conf);
               logger.info("Table unload completed for table: {}.", tableName);
             } catch (SQLException | IOException e) {
               logger.error("Table unload failed for table: {}.", tableName, e);
@@ -104,7 +107,27 @@ public class Main {
     final String path = conf.getString("writer.path");
     final WriterFactory writerFactory = new WriterFactory();
     final Writer writer = writerFactory.getWriter();
-    final File file = Utils.getWriterFile(path, tableName, Utils.getCurrentDateTime());
+    final File file = Utils.getWriterFile(path, tableName, currentTimeStamp);
     writer.write(header, resultSet, file);
+  }
+
+  private static void uploadToS3(final String tableName, final Config conf) {
+    logger.info("Uploading file to s3 for table: {}.", tableName);
+    final String clientRegion = conf.getString("storage.s3.aws_region");
+    final String bucketName = conf.getString("storage.s3.bucket");
+    final String fileName =
+        conf.getString("writer.path")
+            + "/"
+            + tableName
+            + "/"
+            + currentTimeStamp
+            + "."
+            + conf.getString("writer.type");
+
+    final String fileObjKeyName =
+        String.format("%1s/%2s.%3s", tableName, currentTimeStamp, conf.getString("writer.type"));
+    System.out.println(fileObjKeyName);
+    System.out.println(fileName);
+    AwsS3.uploadFile(clientRegion, bucketName, fileObjKeyName, fileName);
   }
 }

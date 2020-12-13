@@ -23,6 +23,7 @@
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <google.guice.version>4.2.3</google.guice.version>
         <azure.storage.sdk.version>12.3.0</azure.storage.sdk.version>
+        <aws.sdk.s3.version>1.11.917</aws.sdk.s3.version>
     </properties>
     <build>
         <plugins>
@@ -126,6 +127,11 @@
             <groupId>com.azure</groupId>
             <artifactId>azure-storage-file-datalake</artifactId>
             <version>${azure.storage.sdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>${aws.sdk.s3.version}</version>
         </dependency>
     </dependencies>
 </project>

@@ -1,4 +1,7 @@
 .idea/
 db-unloader.iml
 target/
+terraform/.terraform
+terraform/terraform.tfstate
 scripts/test_setup.sql
+src/test/java/org/aaiahmed/dbunloader/storage
